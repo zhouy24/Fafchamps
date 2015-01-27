@@ -75,14 +75,14 @@ dontknow[somesample]
 ```
 
 ```
-##  [1] 917.79386 230.19167 436.54081 248.44031 160.51412 615.84445 664.05953
-##  [8] 850.02571 442.79959 213.23401 827.72347 435.07857 371.95230  80.08189
-## [15] 648.21904 294.45161 406.84769 292.48212 993.65162 100.60596  99.16315
-## [22] 678.24064  27.58611 705.79853 829.99811  97.49354 475.45019 181.10204
-## [29] 262.26738 724.59939 379.26265 862.96437 275.60205  55.93078 324.07150
-## [36] 533.96649 538.74854  97.50017 182.08662 498.81579 471.26478 823.97078
-## [43] 949.63593 473.92164 506.66931 313.05863 926.54682 467.86445  91.97510
-## [50] 606.22260
+##  [1] 263.46173 542.15419 506.40740 554.78892 299.68040 164.25693 221.71577
+##  [8] 168.58070  29.59914 372.05855 920.50965 201.33132 853.51180 874.93014
+## [15] 185.49694  34.15143 701.20360 866.13312 354.29174 575.13083 184.56040
+## [22] 565.79240 991.49664  47.42585 113.19425  57.68100 394.85147 855.64440
+## [29] 234.60219 628.94045 541.48937 353.45369 230.03913 737.47696 359.50144
+## [36] 520.11367 903.72275 740.43407 101.18904 229.04207 366.78637 812.66503
+## [43]  41.31415 248.92915 569.04290  72.15697 449.88599 544.77175 766.16273
+## [50] 103.23741
 ```
 
 ```r
@@ -97,7 +97,7 @@ reg
 ## 
 ## Coefficients:
 ##        (Intercept)     age[somesample]  gender[somesample]  
-##              10.02               10.00               10.00
+##              10.03               10.00               10.09
 ```
 
 ```r
@@ -110,20 +110,20 @@ summary(reg)
 ## lm(formula = dontknow[somesample] ~ age[somesample] + gender[somesample])
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -1.9822 -0.8109 -0.0143  0.5387  2.0355 
+##      Min       1Q   Median       3Q      Max 
+## -2.76147 -0.81079  0.02082  1.06987  2.75747 
 ## 
 ## Coefficients:
-##                     Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)        10.019469   0.312489   32.06   <2e-16 ***
-## age[somesample]    10.000844   0.005169 1934.67   <2e-16 ***
-## gender[somesample] 10.004978   0.283370   35.31   <2e-16 ***
+##                    Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)        10.03472    0.39746   25.25   <2e-16 ***
+## age[somesample]    10.00018    0.00653 1531.38   <2e-16 ***
+## gender[somesample] 10.08912    0.37180   27.14   <2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 0.9977 on 47 degrees of freedom
+## Residual standard error: 1.268 on 47 degrees of freedom
 ## Multiple R-squared:      1,	Adjusted R-squared:      1 
-## F-statistic: 1.873e+06 on 2 and 47 DF,  p-value: < 2.2e-16
+## F-statistic: 1.241e+06 on 2 and 47 DF,  p-value: < 2.2e-16
 ```
 Check if the confidence interval contains the true values of beta1 and beta2.
 
@@ -133,7 +133,7 @@ confint(reg, "(Intercept)")
 
 ```
 ##                2.5 %   97.5 %
-## (Intercept) 9.390822 10.64812
+## (Intercept) 9.235131 10.83431
 ```
 
 ```r
@@ -142,7 +142,7 @@ confint(reg, "age[somesample]")
 
 ```
 ##                    2.5 %   97.5 %
-## age[somesample] 9.990445 10.01124
+## age[somesample] 9.987038 10.01331
 ```
 
 ```r
@@ -150,8 +150,8 @@ confint(reg, "gender[somesample]")
 ```
 
 ```
-##                      2.5 %   97.5 %
-## gender[somesample] 9.43491 10.57505
+##                       2.5 %   97.5 %
+## gender[somesample] 9.341162 10.83708
 ```
 Yes the confidence interval contains the true value of beta1 and beta 2
 
@@ -182,7 +182,7 @@ countbeta1
 ```
 
 ```
-## [1] 94
+## [1] 99
 ```
 
 ```r
@@ -190,7 +190,7 @@ countbeta2
 ```
 
 ```
-## [1] 100
+## [1] 99
 ```
 After computing a hundred times, 
 the fraction of times the true parameter beta1
