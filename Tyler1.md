@@ -46,6 +46,7 @@ for(i in 1:n){
 ```
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 Simulate covariates for each individual in the network 
 2a simulate each individual’s age and gender 
 by taking a draw from a distribution that looks like the us population age distribution 
