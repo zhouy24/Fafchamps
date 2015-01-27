@@ -17,6 +17,7 @@ plot(x, y)
 ```
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png) 
+
 1b compute the n*n matrix of Euclidean distances between individuals 
 
 ```r
