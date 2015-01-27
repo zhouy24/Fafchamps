@@ -196,5 +196,5 @@ After computing a hundred times,
 the fraction of times the true parameter beta1
 is contained in the estimated interval is around 99/100
 and the fraction of times the true parameter beta2
-is contained in the estimated interval is around 60/100
+is contained in the estimated interval is around 99/100
 ```
