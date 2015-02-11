@@ -1,0 +1,92 @@
+#### Simmulate a social network ####
+#1a for i in 1,…,n respondents simulate a position in a 2-dimensional space 
+# using a draw from a 2d normal distribution
+rm(list = ls())
+setwd('/Users/yuezhou/Desktop/TYLER')
+n <- 100
+x <- rnorm(n, mean = 0, sd = 1)
+y <- rnorm(n, mean= 0, sd = 1)
+plot(x, y)
+
+#1b compute the n*n matrix of Euclidean distances between individuals 
+A <- cbind(x, y)
+distance <- dist(A)
+distance <- as.matrix(distance)
+distance
+
+#For each pair of individuals (say individual i and individual j), 
+#simulate an edge using a draw from a bernoulli distribution with a success probability 
+#equal to exp(a*d_ij)/(1+exp(a*d_ij)) where d_ij is the distance between i and j computed in 1b 
+#and a is a constant that controls the overall expected tie frequency. 
+a = 0.1
+probability <- exp(a * distance)/ (1+exp(a*distance))
+probability
+rvariable <- rbinom(n*n, 1, as.vector(probability))
+rvariable = matrix(rvariable, ncol = n, nrow = n)
+plot(x, y)
+for(i in 1:n){
+  for(j in 1:n){
+    if (rvariable[i, j] == 1){
+    segments(x[i],y[i],x[j],y[j])
+    }
+  }
+}
+#### Simulate covariates for each individual in the network ####
+#2a simulate each individual’s age and gender 
+#by taking a draw from a distribution that looks like the us population age distribution 
+#and flipping a fair coin, respectively.  
+age <- runif(n, min = 0, max =100)
+gender <- rbinom(n, 1, 1/2)
+
+#2b Now simulate an outcome for each person. 
+#Take a draw from a standard normal with mean equal to beta0+beta1*gender+beta2*age.
+beta0 <- 10
+beta1 <- 5
+beta2 <- 10
+dontknow <- rnorm(n, mean = beta0 + beta1*gender + beta2*age, sd = 1)
+dontknow
+#### Take a sample and compute a confidence interval####
+#3a Randomly choosing a set of individuals 
+#then running a regression model to estimate beta1 and beta2. 
+index <-1:length(dontknow)
+m <- 50 
+somesample <- sample(index, m, replace=FALSE, prob = NULL)
+dontknow[somesample]
+
+reg <- lm(dontknow[somesample] ~ age[somesample] + gender[somesample])
+reg
+summary(reg)
+#Check if the confidence interval contains the true values of beta1 and beta2.
+confint(reg, "(Intercept)")
+confint(reg, "age[somesample]")
+confint(reg, "gender[somesample]")
+#Yes the confidence interval contains the true value of beta1 and beta 2
+
+#3b Now randomly sample *edges* from the social network
+#and evaluate in the same way as 3b.  
+#After doing this multiple times compute the coverage of the confidence intervals
+trials <- 100
+countbeta1 <- 0
+countbeta2 <- 0
+index <-1:length(dontknow)
+m <- 50 
+for(i in 1:trials){
+  somesample <- sample(index, m, replace=FALSE, prob = NULL)
+  reg <- lm(dontknow[somesample] ~ age[somesample] + gender[somesample])
+  summary(reg)
+  interval1 = confint(reg, "gender[somesample]")
+  interval2 = confint(reg, "age[somesample]")
+  if (beta1 < interval1[2] && beta1 > interval1[1]) {
+    countbeta1 <- countbeta1 + 1
+  }
+  if (beta2 < interval2[2] && beta2 > interval2[1]) {
+    countbeta2 <- countbeta2 + 1
+  }
+}
+countbeta1
+countbeta2
+#After computing a hundred times, 
+#the fraction of times the true parameter beta1
+#is contained in the estimated interval is around 99/100
+#and the fraction of times the true parameter beta2
+#is contained in the estimated interval is around 60/100
