@@ -276,8 +276,7 @@ plotint <- function(confidence, beta, x.lab, dis1, dis2, dis3) {
 }
 ```
 
-Draw the plots for confidence intervals and calculate the coverage of those two types of confidence interval
-
+Draw the plots for confidence intervals and calculate the coverage of those two types of confidence interval 
 Red line represents the true value of the variable 
 
 ```{r}
