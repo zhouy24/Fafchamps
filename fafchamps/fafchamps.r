@@ -46,6 +46,7 @@ N <- n
 K <- 2
 # X_ij, i = 1,...,N, j = 1,...,K
 X <- matrix(0, N, K)
+
 # L_ij, i = 1,...,N, j = 1,...,N
 # simulate each pair of X connect or not, ignore when i = j
 #0 means there is no relationship between individuals i and j
