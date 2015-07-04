@@ -6,7 +6,7 @@ library(car)
 n <- 100
 x <- rnorm(n, mean = 0, sd = 1)
 y <- rnorm(n, mean= 0, sd = 1)
-trials <- 20
+trials <- 100
 
 #compute the n*n matrix of Euclidean distances between individuals 
 A <- cbind(x, y)
@@ -253,9 +253,11 @@ plotint <- function(confidence, beta, x.lab, dis1, dis2, dis3) {
   return(c(countbeta, countbeta.r))
 }
 
-plotint(confidence_1, beta1, "adjusted beta1 vs regular beta1", 0.1, 0.5, 0.4)
-plotint(confidence_2, beta2, "adjusted beta2 vs regular beta2", 0.01, 0.01, 0.01)
-plotint(confidence_3, beta3, "adjusted beta3 vs regular beta3", 0.1, 0.5, 0.5)
-plotint(confidence_4, beta4, "adjusted beta4 vs regular beta4", 0.005, 0.005, 0.005)
-plotint(confidence_5, beta5, "adjusted beta5 vs regular beta5", 0.2, 0.5, 0.5)
+#Draw the plots for confidence intervals and calculate the coverage of those two types of confidence interval 
+#Red line represents the true value of the variable 
+plotint(confidence_1, beta1, "adjusted beta1 vs regular beta1", 2, 3, 2)
+plotint(confidence_2, beta2, "adjusted beta2 vs regular beta2", 0.02, 0.05, 0.02)
+plotint(confidence_3, beta3, "adjusted beta3 vs regular beta3", 2, 3, 2)
+plotint(confidence_4, beta4, "adjusted beta4 vs regular beta4", 0.02, 0.04, 0.03)
+plotint(confidence_5, beta5, "adjusted beta5 vs regular beta5", 1, 2, 1.5)
 
