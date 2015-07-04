@@ -1,8 +1,8 @@
 rm(list = ls())
 setwd('/Users/yuezhou/Desktop/fafchamps')
 library(car)
-#### simulate a position in a two-dimentional space ####
 
+#Simulate positions in a two-dimentional space 
 n <- 100
 x <- rnorm(n, mean = 0, sd = 1)
 y <- rnorm(n, mean= 0, sd = 1)
@@ -13,8 +13,7 @@ A <- cbind(x, y)
 distance <- dist(A)
 distance <- as.matrix(distance)
 
-#create symmetric matrixs A, B and C as constant 
-#that times distance to simulate benefit and cost from a link 
+#create symmetric matrixs A, B and C as constant that times distance to simulate benefit and cost from a relationship
 a_0 <- 10
 b_0 <- 5
 c_0 <- 5
@@ -33,12 +32,13 @@ A <- constant(a_0)
 B <- constant(b_0)
 C <- constant(c_0)
 
-#get the relationship between each pair of individual people
+#Get the relationship between each pair of individual people
 B_1 <- A * distance
 B_0 <- B * distance
 cost <- C * distance
 benefit <- B_1 - B_0 
 relation <- benefit - cost
+
 ## basic data
 # number of person
 N <- n
@@ -48,6 +48,8 @@ K <- 2
 X <- matrix(0, N, K)
 # L_ij, i = 1,...,N, j = 1,...,N
 # simulate each pair of X connect or not, ignore when i = j
+#0 means there is no relationship between individuals i and j
+#1 means there is a relationship beteen individuals i and j
 L <- matrix(0, N, N)
 for(i in 1:N){
   for(j in 1:N){
@@ -77,6 +79,10 @@ confidence_5 <- matrix(NA, nrow = trials, ncol = 4)
 # 	   right = c(e,f,g,h,...)
 # 	   --> row (a, e), (b, f), ... share same index 
 # !! This part is calculated outside of Simulation loop, so only once
+whichrow <- function(i, j, N){
+  return((i - 1) * (N - 1) + j - as.numeric(j > i))
+}
+
 
 add <- 0
 length <- (4 * (N-2) + 2) * (N-1) * N
@@ -104,10 +110,10 @@ for(i in 1:N){
       
       ##################################################################	
       # second case (k, l) = (anything not i, j, i or j)
-      # left_to_add is the same (whywhywhywhywhywhywhywhywhywhy)
+      # left_to_add is the same 
       left[(2 * (N-2)+1) : (4 * (N-2)) + add] <- rep(leftrow, 2 * (N - 2))
-      right[(2 * (N-2)+1) : (4 * (N-2)) + add] <- c(whichrow(i, anything_not_ij, N), 
-                                                    whichrow(j, anything_not_ij, N))
+      right[(2 * (N-2)+1) : (4 * (N-2)) + add] <- c(whichrow(anything_not_ij, i, N), 
+                                                    whichrow(anything_not_ij, j, N))
       
       ##################################################################	
       # last case (k, l) = (i, j) or (j, i)
@@ -117,7 +123,6 @@ for(i in 1:N){
     }
   }
 }
-
 
 for (h in 1 : trials) {
   cat("\n+")
@@ -159,7 +164,7 @@ for (h in 1 : trials) {
   }
   
   ## Y_noise, "someoutcome1"
-  Y_noise <-  rnorm(N*(N-1), mean = Y_long, sd = 5)
+  Y_noise <-  rnorm(N*(N-1), mean = Y_long, sd = 20)
   ## calculate regular regression, coefficient and standard error
   reg <- lm(Y_noise ~ X_long-1)
   
@@ -176,28 +181,19 @@ for (h in 1 : trials) {
   # that row index is (i - 1) * (N - 1) + j - 1 if j > i
   # 					(i - 1) * (N - 1) + j     if j < i, why?
   #
-  whichrow <- function(i, j, N){
-    return((i - 1) * (N - 1) + j - as.numeric(j > i))
-  }
-  
+
   #################################################################################
+  # ted
+  sum_inside <- crossprod(Xu[left, ], Xu[right, ])
+  sum_inside <- sum_inside
+  XX <- solve((t(X_long)) %*% X_long)
+  Var <- XX %*% sum_inside %*% XX
+  
   # paper
   #sum_inside <- sum(Xu[left, ] * Xu[right, ]) 
-  #sum_inside <- sum_inside/(2 * N * (N - K))
+  #sum_inside <- sum_inside/(2*N * (N*(N-1)-K))
   #XX <- solve((t(X_long)) %*% X_long)
   #Var <- sum_inside * (XX %*% XX)
-  
-  # ted
-  #sum_inside <- crossprod(Xu[left, ], Xu[right, ])
-  #sum_inside <- sum_inside
-  #XX <- solve((t(X_long)) %*% X_long)
-  #Var <- XX %*% sum_inside %*% XX
-  
-  # paper2
-  sum_inside <- sum(Xu[left, ] * Xu[right, ]) 
-  sum_inside <- sum_inside/(2*N * (N*(N-1)-K))
-  XX <- solve((t(X_long)) %*% X_long)
-  Var <- sum_inside * (XX %*% XX)
   
   
   Var[Var < 0] <- 0
@@ -205,7 +201,7 @@ for (h in 1 : trials) {
   se.new <- diag(Var)^0.5
   
   
-  ## now re-arrange the orders to repeat in for-loop and save results
+  #Construct a matrix that contain all the confidence interval generated for each variable
   conf <- matrix(NA, 5, 4)
   confidence_adjusted <- function(coef, var) {
     for (j in 1 : (2 * K + 1)) { 
@@ -227,6 +223,7 @@ for (h in 1 : trials) {
   
 }
 
+#function that draws the plot for confidence intervals
 plotint <- function(confidence, beta, x.lab, dis1, dis2, dis3) {
   countbeta <- 0 
   countbeta.r <- 0 
@@ -254,10 +251,10 @@ plotint <- function(confidence, beta, x.lab, dis1, dis2, dis3) {
   }
   return(c(countbeta, countbeta.r))
 }
-h = trials
-plotint(confidence_1, beta1, "adjusted beta1 vs regular beta1", 0.4, 0.5, 0.4)
-plotint(confidence_2, beta2, "adjusted beta2 vs regular beta2", 10, 30, 10)
-plotint(confidence_3, beta3, "adjusted beta3 vs regular beta3", 0.5, 1, 0.5)
+
+plotint(confidence_1, beta1, "adjusted beta1 vs regular beta1", 0.1, 0.5, 0.4)
+plotint(confidence_2, beta2, "adjusted beta2 vs regular beta2", 0.01, 0.01, 0.01)
+plotint(confidence_3, beta3, "adjusted beta3 vs regular beta3", 0.1, 0.5, 0.5)
 plotint(confidence_4, beta4, "adjusted beta4 vs regular beta4", 0.005, 0.005, 0.005)
-plotint(confidence_5, beta5, "adjusted beta5 vs regular beta5", 2, 2, 2)
+plotint(confidence_5, beta5, "adjusted beta5 vs regular beta5", 0.2, 0.5, 0.5)
 

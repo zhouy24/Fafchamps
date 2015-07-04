@@ -1,8 +1,3 @@
-#### Simmulate a social network ####
-rm(list = ls())
-setwd('/Users/yuezhou/Desktop/TYLER')
-library(car)
-#### simulate a position in a two-dimentional space ####
 n <- 100
 x <- rnorm(n, mean = 0, sd = 1)
 y <- rnorm(n, mean= 0, sd = 1)
@@ -64,14 +59,14 @@ for(i in 1:n){
 #### simulate an outcome Y for each pair of individuals ####
 #### Directional relationship ####
 #a forloop that runs the simulation trials times and get different confidence interval
-beta0 <- 10
+beta0 <- 0
 beta1 <- 2
 beta2 <- 3
 beta3 <- 4
 beta4 <- 5
 beta5 <- 6
 
-trials <- 100
+trials <- 10
 
 confidence_1 <- matrix(NA, nrow = trials, ncol = 4)
 confidence_2 <- matrix(NA, nrow = trials, ncol = 4)
@@ -120,18 +115,16 @@ for(h in 1:trials){
   #when dyadic relationship is directional
   #Y_ij = Y_ji 
   #construct the residuals 
-  someoutcome1 <- rnorm(n*n, mean = fittedoutcome, sd = 20)
-  trueoutcome1 <- matrix(someoutcome1, nrow = n)
-  fitted_outcome <- matrix(fittedoutcome, ncol = 1, byrow = T)
-  reg <- lm(someoutcome1 ~ gender.1 + gender.2 + age.1 + age.2 + link_ij)
+  someoutcome1 <- rnorm(n*n, mean = as.vector(fittedoutcome), sd = 20)
+  reg <- lm(someoutcome1 ~ gender.1 + gender.2 + age.1 + age.2 + link_ij - 1)
   reg_1 <- matrix(fitted(reg), ncol = n)
-  u1 <- trueoutcome1 - reg_1
+  u1 <- fittedoutcome - reg_1
   
   #convert all the true regressors value into a matrix
   #compareCoefs(reg)    
   # coef <- matrix(compareCoefs(reg))
   coef <- summary(reg)$coefficients[, 1:2]
-    
+  
   #transpose X
   X_prime <- t(X)
   #X*X' 
@@ -157,13 +150,13 @@ for(h in 1:trials){
       for (l in unique(c(i,j))){
         for (k in 1:n){
           if (k != i && k != j){
-          m_ijkl <- 1
-          X_ij <- X[(i-1) * n + j, ]
-          u_ij <- u1[i,j]
-          u_kl <- u1[k,l]
-          X_kl <- X[(k-1) * n+l, ]
-          inside <- m_ijkl *u_ij * u_kl * X_ij  %*% t(X_kl)
-          suminside <- inside + suminside
+            m_ijkl <- 1
+            X_ij <- X[(i-1) * n + j, ]
+            u_ij <- u1[i,j]
+            u_kl <- u1[k,l]
+            X_kl <- X[(k-1) * n+l, ]
+            inside <- m_ijkl *u_ij * u_kl * X_ij  %*% t(X_kl)
+            suminside <- inside + suminside
           }
         }
       }
@@ -176,24 +169,24 @@ for(h in 1:trials){
   var[var < 0] <- 0
   
   #compute the confidence interval using the method in the paper
-  conf_gender1l <- coef[2,1] - 1.96 * var[1,1]^0.5
-  conf_gender1u <- coef[2,1] + 1.96 * var[1,1]^0.5
+  conf_gender1l <- coef[1,1] - 1.96 * var[1,1]^0.5
+  conf_gender1u <- coef[1,1] + 1.96 * var[1,1]^0.5
   c(conf_gender1l, conf_gender1u)
   
-  conf_gender2l <- coef[3,1] - 1.96 * var[2,2]^0.5
-  conf_gender2u <- coef[3,1] + 1.96 * var[2,2]^0.5
+  conf_gender2l <- coef[2,1] - 1.96 * var[2,2]^0.5
+  conf_gender2u <- coef[2,1] + 1.96 * var[2,2]^0.5
   c(conf_gender2l, conf_gender2u)
   
-  conf_age1l <- coef[4,1] - 1.96 * var[3,3]^0.5
-  conf_age1u <- coef[4,1] + 1.96 * var[3,3]^0.5
+  conf_age1l <- coef[3,1] - 1.96 * var[3,3]^0.5
+  conf_age1u <- coef[3,1] + 1.96 * var[3,3]^0.5
   c(conf_age1l, conf_age1u)
   
-  conf_age2l <- coef[5,1] - 1.96 * var[4,4]^0.5
-  conf_age2u <- coef[5,1] + 1.96 * var[4,4]^0.5
+  conf_age2l <- coef[4,1] - 1.96 * var[4,4]^0.5
+  conf_age2u <- coef[4,1] + 1.96 * var[4,4]^0.5
   c(conf_age2l, conf_age2u)
   
-  conf_linkl <- coef[6,1] - 1.96 * var[5,5]^0.5
-  conf_linku <- coef[6,1] + 1.96 * var[5,5]^0.5
+  conf_linkl <- coef[5,1] - 1.96 * var[5,5]^0.5
+  conf_linku <- coef[5,1] + 1.96 * var[5,5]^0.5
   c(conf_linkl, conf_linku)
   
   #compute variace of beta hat using confint
@@ -260,7 +253,7 @@ plotint <- function(confidence, beta, x.lab, dis1, dis2, dis3) {
   countbeta <- 0 
   countbeta.r <- 0 
   dim <- dim(confidence)[1]
-
+  
   plot(NA, xlim = c(beta - dis1, beta + dis2 + dis3),
        ylim = c(0, dim), xlab = x.lab, ylab = "trials")
   abline(v = beta, col = "red")
@@ -289,5 +282,3 @@ plotint(confidence_2, beta2, "adjusted beta2 vs regular beta2", 10, 30, 10)
 plotint(confidence_3, beta3, "adjusted beta3 vs regular beta3", 0.5, 1, 0.5)
 plotint(confidence_4, beta4, "adjusted beta4 vs regular beta4", 0.5, 1, 0.5)
 plotint(confidence_5, beta5, "adjusted beta5 vs regular beta5", 15, 30, 10)
-
-save.image("Directional relationship")
