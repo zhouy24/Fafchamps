@@ -11,10 +11,10 @@ library(car)
 Simulate positions in a two-dimentional space 
 
 ```{r}
-n <- 100
+n <- 1000
 x <- rnorm(n, mean = 0, sd = 1)
 y <- rnorm(n, mean= 0, sd = 1)
-trials <- 100
+trials <- 1000
 
 #compute the n*n matrix of Euclidean distances between individuals 
 A <- cbind(x, y)
